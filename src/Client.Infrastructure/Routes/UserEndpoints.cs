@@ -18,7 +18,14 @@
         {
             return $"{Export}?searchString={searchString}";
         }
-
+        internal static string ConfirmEmail(string userId, string code)
+        {
+            return $"api/identity/user/confirm-email/?userId={userId}&code={code}";
+        }
+        internal static string DeleteUser(string userId)
+        {
+            return $"api/identity/user/delete/{userId}";
+        }
         public static string Export = "api/identity/user/export";
         public static string Register = "api/identity/user";
         public static string ToggleUserStatus = "api/identity/user/toggle-status";

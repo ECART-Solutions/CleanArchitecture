@@ -9,6 +9,9 @@ using BlazorHero.CleanArchitecture.Shared.Constants.Application;
 using BlazorHero.CleanArchitecture.Shared.Constants.Permission;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.JSInterop;
+using BlazorHero.CleanArchitecture.Client.Infrastructure.Extensions;
+using BlazorHero.CleanArchitecture.Domain.Entities.Misc;
+using BlazorHero.CleanArchitecture.Client.Shared;
 
 namespace BlazorHero.CleanArchitecture.Client.Pages.Identity
 {
@@ -26,6 +29,7 @@ namespace BlazorHero.CleanArchitecture.Client.Pages.Identity
         private bool _canSearchUsers;
         private bool _canExportUsers;
         private bool _canViewRoles;
+        private bool _canDeleteUsers;
         private bool _loaded;
 
         protected override async Task OnInitializedAsync()
@@ -35,7 +39,7 @@ namespace BlazorHero.CleanArchitecture.Client.Pages.Identity
             _canSearchUsers = (await _authorizationService.AuthorizeAsync(_currentUser, Permissions.Users.Search)).Succeeded;
             _canExportUsers = (await _authorizationService.AuthorizeAsync(_currentUser, Permissions.Users.Export)).Succeeded;
             _canViewRoles = (await _authorizationService.AuthorizeAsync(_currentUser, Permissions.Roles.View)).Succeeded;
-
+            _canDeleteUsers = (await _authorizationService.AuthorizeAsync(_currentUser, Permissions.Users.Delete)).Succeeded;
             await GetUsersAsync();
             _loaded = true;
         }
@@ -43,17 +47,11 @@ namespace BlazorHero.CleanArchitecture.Client.Pages.Identity
         private async Task GetUsersAsync()
         {
             var response = await _userManager.GetAllAsync();
-            if (response.Succeeded)
-            {
-                _userList = response.Data.ToList();
-            }
-            else
-            {
-                foreach (var message in response.Messages)
-                {
-                    _snackBar.Add(message, Severity.Error);
-                }
-            }
+
+            response.ManageResult(_snackBar);
+            _userList = response.Data;
+            await InvokeAsync(StateHasChanged);
+
         }
 
         private bool Search(UserResponse user)
@@ -117,6 +115,26 @@ namespace BlazorHero.CleanArchitecture.Client.Pages.Identity
         {
             if (email == "mukesh@blazorhero.com") _snackBar.Add(_localizer["Not Allowed."], Severity.Error);
             else _navigationManager.NavigateTo($"/identity/user-roles/{userId}");
+        }
+        private async Task DeleteUser(string userId)
+        {
+            var user = _userList.FirstOrDefault(_ => _.Id == userId);
+
+            string deleteContent = $"Vous êtes sur le point de supprimer l'utilisateur {user.FirstName} {user.LastName} ({user.Email}).";
+            var parameters = new DialogParameters
+            {
+                {nameof(Shared.Dialogs.DeleteConfirmation.ContentText), deleteContent}
+            };
+            var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true, DisableBackdropClick = true };
+            var dialog = _dialogService.Show<Shared.Dialogs.DeleteConfirmation>(_localizer["Supprimer"], parameters, options);
+            var result = await dialog.Result;
+            if (!result.Cancelled)
+            {                
+                var response = await _userManager.DeleteUser(userId);
+                Func<Task> refreshData = (async () => await GetUsersAsync());
+                response.ManageResult(_snackBar, refreshData);               
+
+            }
         }
     }
 }

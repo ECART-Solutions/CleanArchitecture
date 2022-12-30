@@ -1,0 +1,59 @@
+﻿@page "/confirm/{userId}/{code}"
+
+@using BlazorHero.CleanArchitecture.Client.Pages.Identity;
+@layout MainLayout
+@attribute [AllowAnonymous]
+@inject Microsoft.Extensions.Localization.IStringLocalizer<Security> _localizer
+@if (_loading)
+{
+    <OtrMudOverlay IsAbsolute="true" MudOverlayIsVisible="_loading"></OtrMudOverlay>
+
+}
+else
+{
+    <LogoOTR></LogoOTR>
+    @if (_actionSucceeded)
+    {
+        <MudGrid>
+            @if (color == Color.Success)
+            {
+                <MudAlert Align="Align.Center" Severity="Severity.Success" Typo="Typo.h4">@_localizer[message]</MudAlert>
+            }
+            else
+            {
+                <MudAlert Align="Align.Center" Severity="Severity.Error" Typo="Typo.h4">@_localizer[message]</MudAlert>
+            }
+            <MudItem>
+                <MudButton FullWidth="true" Color="Color.Primary" Size="Size.Large" StartIcon="@Icons.Material.Outlined.Login" Link="/login">Se connecter</MudButton>
+            </MudItem>
+        </MudGrid>
+    }
+    else
+    {
+        <EditForm Model="@_passwordModel" OnValidSubmit="ConfirmationAsync">
+            <FluentValidationValidator @ref="_fluentValidationValidator" />
+            <MudCard Elevation="25">
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudText>@_localizer["Veuillez créez un mot de Passe pour Confirmer votre compte"]</MudText>
+                    </CardHeaderContent>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudGrid>
+                        <MudItem xs="12">
+                            <MudTextField T="string" @bind-Value="_passwordModel.NewPassword" For="@(() => _passwordModel.NewPassword)" Label="@_localizer["Password"]" Variant="Variant.Outlined" InputType="_newPasswordInput" Adornment="Adornment.End" AdornmentIcon="@_newPasswordInputIcon" OnAdornmentClick="@(() => TogglePasswordVisibility(true))" />
+                        </MudItem>
+                        <MudItem xs="12">
+                            <MudTextField T="string" @bind-Value="_passwordModel.ConfirmNewPassword" For="@(() => _passwordModel.ConfirmNewPassword)" Label="@_localizer["Password Confirmation"]" Variant="Variant.Outlined" InputType="_newPasswordInput" Adornment="Adornment.End" AdornmentIcon="@_newPasswordInputIcon" OnAdornmentClick="@(() => TogglePasswordVisibility(true))" />
+                        </MudItem>
+                    </MudGrid>
+                </MudCardContent>
+                <MudCardActions Class="pb-4 pl-4">
+                    <MudButton Variant="Variant.Filled" Disabled="@(!Validated)" Color="Color.Primary" ButtonType="ButtonType.Submit" Class="ml-auto">@_localizer["Activer le Compte"]</MudButton>
+                </MudCardActions>
+            </MudCard>
+        </EditForm>
+
+    }
+
+}

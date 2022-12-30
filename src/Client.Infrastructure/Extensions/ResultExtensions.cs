@@ -1,4 +1,8 @@
 ﻿using BlazorHero.CleanArchitecture.Shared.Wrapper;
+
+using MudBlazor;
+
+using System;
 using System.Net.Http;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -38,6 +42,21 @@ namespace BlazorHero.CleanArchitecture.Client.Infrastructure.Extensions
                 PropertyNameCaseInsensitive = true
             });
             return responseObject;
+        }
+        public static void DisplayMessages(this IResult result, ISnackbar _snackBar, Func<Task> func)
+        {
+            if (result.Succeeded)
+            {
+                _snackBar.Add(result.Messages[0], Severity.Success);
+                Task.Run(() => func);
+            }
+            else
+            {
+                foreach (var message in result.Messages)
+                {
+                    _snackBar.Add(message, Severity.Error);
+                }
+            }
         }
     }
 }

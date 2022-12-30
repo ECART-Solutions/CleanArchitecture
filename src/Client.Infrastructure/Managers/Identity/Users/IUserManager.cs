@@ -8,7 +8,7 @@ namespace BlazorHero.CleanArchitecture.Client.Infrastructure.Managers.Identity.U
 {
     public interface IUserManager : IManager
     {
-        Task<IResult<List<UserResponse>>> GetAllAsync();
+        Task<IResult<List<UserResponse>>> GetAllAsync();      
 
         Task<IResult> ForgotPasswordAsync(ForgotPasswordRequest request);
 
@@ -19,10 +19,13 @@ namespace BlazorHero.CleanArchitecture.Client.Infrastructure.Managers.Identity.U
         Task<IResult<UserRolesResponse>> GetRolesAsync(string userId);
 
         Task<IResult> RegisterUserAsync(RegisterRequest request);
+        Task<IResult> DeleteUser(string userId);
 
         Task<IResult> ToggleUserStatusAsync(ToggleUserStatusRequest request);
 
         Task<IResult> UpdateRolesAsync(UpdateUserRolesRequest request);
+
+        Task<IResult<string>> ConfirmAccount(string userId, string code);
 
         Task<string> ExportToExcelAsync(string searchString = "");
     }

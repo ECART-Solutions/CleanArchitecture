@@ -2,6 +2,10 @@
 {
     public static class ApplicationConstants
     {
+        public static class GudefPass
+        {
+            public const string Pass = "e3faafcd1722a55dbbf05243bc2154c2fdf4eaf2";
+        }
         public static class SignalR
         {
             public const string HubUrl = "/signalRHub";

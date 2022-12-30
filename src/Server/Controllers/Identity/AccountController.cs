@@ -44,7 +44,18 @@ namespace BlazorHero.CleanArchitecture.Server.Controllers.Identity
             var response = await _accountService.ChangePasswordAsync(model, _currentUser.UserId);
             return Ok(response);
         }
-
+        /// <summary>
+        /// Change Password
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns>Status 200 OK</returns>
+        [HttpPut(nameof(ChangeUserPassword))]
+        [AllowAnonymous]
+        public async Task<ActionResult> ChangeUserPassword(ChangeUserPasswordRequest model)
+        {
+            var response = await _accountService.ChangePasswordAsync(model, model.UserId);
+            return Ok(response);
+        }
         /// <summary>
         /// Get Profile picture by Id
         /// </summary>

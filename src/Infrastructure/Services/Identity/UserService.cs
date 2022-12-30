@@ -119,16 +119,14 @@ namespace BlazorHero.CleanArchitecture.Infrastructure.Services.Identity
                 return await Result.FailAsync(string.Format(_localizer["Email {0} is already registered."], request.Email));
             }
         }
-
+       
         private async Task<string> SendVerificationEmail(BlazorHeroUser user, string origin)
         {
             var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
             code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-            var route = "api/identity/user/confirm-email/";
+            var route = $"confirm/{user.Id}/{code}";
             var endpointUri = new Uri(string.Concat($"{origin}/", route));
-            var verificationUri = QueryHelpers.AddQueryString(endpointUri.ToString(), "userId", user.Id);
-            verificationUri = QueryHelpers.AddQueryString(verificationUri, "code", code);
-            return verificationUri;
+            return endpointUri.ToString();
         }
 
         public async Task<IResult<UserResponse>> GetAsync(string userId)
@@ -300,6 +298,16 @@ namespace BlazorHero.CleanArchitecture.Infrastructure.Services.Identity
                 });
 
             return result;
+        }
+        public async Task<IResult> DeleteUser(string userId)
+        {
+            BlazorHeroUser user = await _userManager.FindByIdAsync(userId);
+            if (user is null)
+            {
+                return await Result.FailAsync(_localizer["User Not Found!"]);
+            }
+            await _userManager.DeleteAsync(user);
+            return await Result.SuccessAsync(_localizer["User Deleted"]);
         }
     }
 }

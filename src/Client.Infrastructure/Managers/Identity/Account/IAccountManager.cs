@@ -7,6 +7,7 @@ namespace BlazorHero.CleanArchitecture.Client.Infrastructure.Managers.Identity.A
     public interface IAccountManager : IManager
     {
         Task<IResult> ChangePasswordAsync(ChangePasswordRequest model);
+        Task<IResult> ChangeUserPasswordAsync(ChangeUserPasswordRequest model);
 
         Task<IResult> UpdateProfileAsync(UpdateProfileRequest model);
 

@@ -31,6 +31,7 @@ namespace BlazorHero.CleanArchitecture.Client.Shared
                 : BlazorHeroTheme.DarkTheme;
         }
 
+
         public void Dispose()
         {
             _interceptor.DisposeEvent();

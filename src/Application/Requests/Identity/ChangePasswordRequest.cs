@@ -13,4 +13,8 @@ namespace BlazorHero.CleanArchitecture.Application.Requests.Identity
         [Required]
         public string ConfirmNewPassword { get; set; }
     }
+    public class ChangeUserPasswordRequest: ChangePasswordRequest
+    {
+        public string UserId { get; set; }
+    }
 }

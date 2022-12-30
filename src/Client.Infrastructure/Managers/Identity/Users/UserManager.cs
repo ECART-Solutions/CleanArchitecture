@@ -2,6 +2,7 @@
 using BlazorHero.CleanArchitecture.Application.Responses.Identity;
 using BlazorHero.CleanArchitecture.Client.Infrastructure.Extensions;
 using BlazorHero.CleanArchitecture.Shared.Wrapper;
+
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Json;
@@ -23,7 +24,7 @@ namespace BlazorHero.CleanArchitecture.Client.Infrastructure.Managers.Identity.U
             var response = await _httpClient.GetAsync(Routes.UserEndpoints.GetAll);
             return await response.ToResult<List<UserResponse>>();
         }
-
+        
         public async Task<IResult<UserResponse>> GetAsync(string userId)
         {
             var response = await _httpClient.GetAsync(Routes.UserEndpoints.Get(userId));
@@ -73,6 +74,20 @@ namespace BlazorHero.CleanArchitecture.Client.Infrastructure.Managers.Identity.U
                 : Routes.UserEndpoints.ExportFiltered(searchString));
             var data = await response.Content.ReadAsStringAsync();
             return data;
+        }
+
+        public async Task<IResult<string>> ConfirmAccount(string userId, string code)
+        {
+            var response = await _httpClient.GetAsync(Routes.UserEndpoints.ConfirmEmail(userId, code));
+
+            return await response.ToResult<string>();
+
+        }
+
+        public async Task<IResult> DeleteUser(string userId)
+        {
+            var response = await _httpClient.DeleteAsync(Routes.UserEndpoints.DeleteUser(userId));
+            return await response.ToResult();
         }
     }
 }

@@ -143,5 +143,12 @@ namespace BlazorHero.CleanArchitecture.Server.Controllers.Identity
             var data = await _userService.ExportToExcelAsync(searchString);
             return Ok(data);
         }
+        [Authorize(Policy = Permissions.Users.Delete)]
+        [HttpDelete("delete/{userId}")]
+        public async Task<IActionResult> DeleteUser(string userId)
+        {
+            var result = await _userService.DeleteUser(userId);
+            return Ok(result);
+        }
     }
 }

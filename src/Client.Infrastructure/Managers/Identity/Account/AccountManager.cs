@@ -21,7 +21,11 @@ namespace BlazorHero.CleanArchitecture.Client.Infrastructure.Managers.Identity.A
             var response = await _httpClient.PutAsJsonAsync(Routes.AccountEndpoints.ChangePassword, model);
             return await response.ToResult();
         }
-
+        public async Task<IResult> ChangeUserPasswordAsync(ChangeUserPasswordRequest model)
+        {
+            var response = await _httpClient.PutAsJsonAsync(Routes.AccountEndpoints.ChangeUserPassword, model);
+            return await response.ToResult();
+        }
         public async Task<IResult> UpdateProfileAsync(UpdateProfileRequest model)
         {
             var response = await _httpClient.PutAsJsonAsync(Routes.AccountEndpoints.UpdateProfile, model);
@@ -39,5 +43,6 @@ namespace BlazorHero.CleanArchitecture.Client.Infrastructure.Managers.Identity.A
             var response = await _httpClient.PostAsJsonAsync(Routes.AccountEndpoints.UpdateProfilePicture(userId), request);
             return await response.ToResult<string>();
         }
+        
     }
 }

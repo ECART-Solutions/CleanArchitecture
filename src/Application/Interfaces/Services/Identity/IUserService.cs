@@ -30,5 +30,6 @@ namespace BlazorHero.CleanArchitecture.Application.Interfaces.Services.Identity
         Task<IResult> ResetPasswordAsync(ResetPasswordRequest request);
 
         Task<string> ExportToExcelAsync(string searchString = "");
+        Task<IResult> DeleteUser(string userId);
     }
 }
