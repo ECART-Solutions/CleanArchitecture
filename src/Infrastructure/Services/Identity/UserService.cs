@@ -96,7 +96,7 @@ namespace BlazorHero.CleanArchitecture.Infrastructure.Services.Identity
                     await _userManager.AddToRoleAsync(user, RoleConstants.BasicRole);
                     if (!request.AutoConfirmEmail)
                     {
-                        var verificationUri = await SendVerificationEmail(user, origin);
+                        var verificationUri = await SendVerificationEmail(user,request.IsCreatedByAnotherUser, origin);
                         var mailRequest = new MailRequest
                         {
                             From = "mail@codewithmukesh.com",
@@ -120,11 +120,11 @@ namespace BlazorHero.CleanArchitecture.Infrastructure.Services.Identity
             }
         }
        
-        private async Task<string> SendVerificationEmail(BlazorHeroUser user, string origin)
+        private async Task<string> SendVerificationEmail(BlazorHeroUser user,bool selfRegistrated,string origin)
         {
             var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
             code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-            var route = $"confirm/{user.Id}/{code}";
+            var route = $"confirm/{user.Id}/{!selfRegistrated:bool}/{code}";
             var endpointUri = new Uri(string.Concat($"{origin}/", route));
             return endpointUri.ToString();
         }

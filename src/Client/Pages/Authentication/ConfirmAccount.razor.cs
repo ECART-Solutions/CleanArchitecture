@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Components;
 
 using MudBlazor;
 
+using System;
 using System.Threading.Tasks;
 
 namespace BlazorHero.CleanArchitecture.Client.Pages.Authentication
@@ -16,26 +17,35 @@ namespace BlazorHero.CleanArchitecture.Client.Pages.Authentication
         [Inject] private NavigationManager NavigationManager { get; set; }
         [Parameter] public string userId { get; set; }
         [Parameter] public string code { get; set; }
+        [Parameter] public bool selfRegistrated { get; set; }
 
         public ChangePasswordRequest changePasswordRequest { get; set; }
 
         private bool _loading = true;
         private string message = "Loading...";
         private Color color;
-        private bool _isAllReadyActivated { get; set; } = false;
         private bool _actionSucceeded { get; set; } = false;
         protected override async Task OnInitializedAsync()
         {
             _loading = true;
-            await _authenticationManager.Logout();
-            var result = await _userManager.GetAsync(userId);
-            if (result.Succeeded)
+            try
             {
-                _isAllReadyActivated = result.Data.IsActive;
-                _loading = false;
-                _navigationManager.NavigateTo("/login");
+                await _authenticationManager.Logout();
             }
-            _passwordModel.Password = ApplicationConstants.GudefPass.Pass;
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }                  
+            if (selfRegistrated)
+            {
+                await ConfirmationAsync(selfRegistrated);
+                _actionSucceeded = true;
+            }
+            else
+            {
+                _passwordModel.Password = ApplicationConstants.DefaultPass.Pass;
+            }
+
             _loading = false;
         }
         private FluentValidationValidator _fluentValidationValidator;
@@ -44,8 +54,7 @@ namespace BlazorHero.CleanArchitecture.Client.Pages.Authentication
 
 
         private bool _currentPasswordVisibility;
-        private InputType _currentPasswordInput = InputType.Password;
-        private string _currentPasswordInputIcon = Icons.Material.Filled.VisibilityOff;
+
 
         private bool _newPasswordVisibility;
         private InputType _newPasswordInput = InputType.Password;
@@ -68,21 +77,7 @@ namespace BlazorHero.CleanArchitecture.Client.Pages.Authentication
                     _newPasswordInput = InputType.Text;
                 }
             }
-            else
-            {
-                if (_currentPasswordVisibility)
-                {
-                    _currentPasswordVisibility = false;
-                    _currentPasswordInputIcon = Icons.Material.Filled.VisibilityOff;
-                    _currentPasswordInput = InputType.Password;
-                }
-                else
-                {
-                    _currentPasswordVisibility = true;
-                    _currentPasswordInputIcon = Icons.Material.Filled.Visibility;
-                    _currentPasswordInput = InputType.Text;
-                }
-            }
+
         }
 
         private async Task ChangePasswordAsync()
@@ -111,13 +106,16 @@ namespace BlazorHero.CleanArchitecture.Client.Pages.Authentication
             }
         }
 
-        private async Task ConfirmationAsync()
+        private async Task ConfirmationAsync(bool selfRegistration = false)
         {
             var result = await _userManager.ConfirmAccount(userId, code);
             if (result.Succeeded)
             {
                 color = Color.Success;
-                await ChangePasswordAsync();
+                if (!selfRegistrated)
+                {
+                    await ChangePasswordAsync();
+                }
             }
             else
             {
@@ -125,6 +123,10 @@ namespace BlazorHero.CleanArchitecture.Client.Pages.Authentication
             }
             message = string.Join('\n', result.Messages);
             _actionSucceeded = true;
+        }
+        private async Task ConfirmationAsync()
+        {
+            await ConfirmationAsync(false);
         }
 
     }

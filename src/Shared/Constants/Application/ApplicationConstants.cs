@@ -2,9 +2,9 @@
 {
     public static class ApplicationConstants
     {
-        public static class GudefPass
+        public static class DefaultPass
         {
-            public const string Pass = "e3faafcd1722a55dbbf05243bc2154c2fdf4eaf2";
+            public const string Pass = "vAKmWQB8Cy@PUBg8rBQ";
         }
         public static class SignalR
         {

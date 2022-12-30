@@ -30,5 +30,6 @@ namespace BlazorHero.CleanArchitecture.Application.Requests.Identity
 
         public bool ActivateUser { get; set; } = false;
         public bool AutoConfirmEmail { get; set; } = false;
+        public bool IsCreatedByAnotherUser { get; set; } = false;
     }
 }

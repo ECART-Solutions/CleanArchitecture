@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using System.Threading.Tasks;
 using Blazored.FluentValidation;
+using BlazorHero.CleanArchitecture.Shared.Constants.Application;
 
 namespace BlazorHero.CleanArchitecture.Client.Pages.Identity
 {
@@ -13,6 +14,13 @@ namespace BlazorHero.CleanArchitecture.Client.Pages.Identity
         private readonly RegisterRequest _registerUserModel = new();
         [CascadingParameter] private MudDialogInstance MudDialog { get; set; }
 
+        protected override Task OnInitializedAsync()
+        {
+            _registerUserModel.Password = ApplicationConstants.DefaultPass.Pass;
+            _registerUserModel.ConfirmPassword = _registerUserModel.Password;
+            _registerUserModel.IsCreatedByAnotherUser = true;
+            return base.OnInitializedAsync();
+        }
         private void Cancel()
         {
             MudDialog.Cancel();

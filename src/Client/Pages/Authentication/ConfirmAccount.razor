@@ -1,35 +1,34 @@
-﻿@page "/confirm/{userId}/{code}"
+﻿@page "/confirm/{userId}/{selfRegistrated:bool}/{code}"
 
 @using BlazorHero.CleanArchitecture.Client.Pages.Identity;
 @layout MainLayout
 @attribute [AllowAnonymous]
 @inject Microsoft.Extensions.Localization.IStringLocalizer<Security> _localizer
-@if (_loading)
-{
-    <OtrMudOverlay IsAbsolute="true" MudOverlayIsVisible="_loading"></OtrMudOverlay>
 
+
+<BlazorHeroLogo></BlazorHeroLogo>
+
+    @if (_actionSucceeded)
+{
+    <MudGrid>
+        @if (color == Color.Success)
+        {
+            <MudAlert Align="Align.Center" Severity="Severity.Success" Typo="Typo.h4">@_localizer[message]</MudAlert>
+        }
+        else
+        {
+            <MudAlert Align="Align.Center" Severity="Severity.Error" Typo="Typo.h4">@_localizer[message]</MudAlert>
+        }
+        <MudItem>
+            <MudButton FullWidth="true" Color="Color.Primary" Size="Size.Large" StartIcon="@Icons.Material.Outlined.Login" Link="/login">Se connecter</MudButton>
+        </MudItem>
+    </MudGrid>
 }
 else
 {
-    <LogoOTR></LogoOTR>
-    @if (_actionSucceeded)
+    @if (!selfRegistrated)
     {
-        <MudGrid>
-            @if (color == Color.Success)
-            {
-                <MudAlert Align="Align.Center" Severity="Severity.Success" Typo="Typo.h4">@_localizer[message]</MudAlert>
-            }
-            else
-            {
-                <MudAlert Align="Align.Center" Severity="Severity.Error" Typo="Typo.h4">@_localizer[message]</MudAlert>
-            }
-            <MudItem>
-                <MudButton FullWidth="true" Color="Color.Primary" Size="Size.Large" StartIcon="@Icons.Material.Outlined.Login" Link="/login">Se connecter</MudButton>
-            </MudItem>
-        </MudGrid>
-    }
-    else
-    {
+
         <EditForm Model="@_passwordModel" OnValidSubmit="ConfirmationAsync">
             <FluentValidationValidator @ref="_fluentValidationValidator" />
             <MudCard Elevation="25">
@@ -55,5 +54,4 @@ else
         </EditForm>
 
     }
-
 }
