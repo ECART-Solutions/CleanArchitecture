@@ -344,3 +344,5 @@ healthchecksdb
 
 # Project's xml-files
 *.xml
+/src/Server/appsettings.json
+/src/Server/appsettings.Development.json
